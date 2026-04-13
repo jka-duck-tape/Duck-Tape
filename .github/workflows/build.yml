@@ -200,7 +200,7 @@ jobs:
               for file in "$artifact_dir"/*; do
                 if [ -f "$file" ]; then
                   filename=$(basename "$file" | sed -e 's/-Release-Non-Portable//' -e 's/-Release-Portable//')
-                  gh release upload "$TAG" "$file" --clobber --name "$filename"
+                  gh release upload "$TAG" "$file#$filename" --clobber
                 fi
               done
             fi
