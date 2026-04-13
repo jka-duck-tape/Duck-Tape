@@ -173,7 +173,6 @@ jobs:
           if-no-files-found: error
 
   create-release:
-    if: github.event_name == 'release'
     needs: [msvc, ubuntu]
     runs-on: ubuntu-22.04
     permissions:
@@ -193,16 +192,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          TAG="duck-$(date +'%Y%m%d-%H%M%S')"
+          MESSAGE="Quack!"
+          gh release create "$TAG" --title "Version $TAG" --notes "$MESSAGE"
           for artifact_dir in artifacts/*; do
             if [ -d "$artifact_dir" ]; then
               for file in "$artifact_dir"/*; do
                 if [ -f "$file" ]; then
                   filename=$(basename "$file" | sed -e 's/-Release-Non-Portable//' -e 's/-Release-Portable//')
-                  gh release upload "${{ github.event.release.tag_name }}" \
-                    "$file" \
-                    --clobber \
-                    --name "$filename"
+                  gh release upload "$TAG" "$file" --clobber --name "$filename"
                 fi
               done
             fi
           done
+
